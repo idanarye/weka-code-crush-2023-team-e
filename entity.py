@@ -20,7 +20,10 @@ class Entity(metaclass=ABCMeta):
         if 1.0 <= self.movement_progress:
             self.movement_progress = 0.0
             self.current = self.next
+
             self.next = tuple(c + d for c, d in zip(self.current, self.direction))
+            self.on_movement(grid)
+
 
     def get_current_xy(self):
         def calc(cur, nex):
@@ -31,4 +34,8 @@ class Entity(metaclass=ABCMeta):
 
     @abstractmethod
     def draw(self, screen):
+        pass
+    
+    @abstractmethod
+    def on_movement():
         pass

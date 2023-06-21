@@ -23,6 +23,7 @@ class GameLoop:
             if event.type == pygame.QUIT:
                 self.running = False
 
+        # Move Packman in case of arrow press
         keys = pygame.key.get_pressed()
         for key, direction in [
                 (pygame.K_UP, (0, -1)),
@@ -33,8 +34,14 @@ class GameLoop:
             if keys[key]:
                 self.pacman.direction = direction
 
+        # Exit in case of ESCAPE press
+        if keys[pygame.K_ESCAPE]:
+            self.running = False
+
         for entity in self.iter_entities():
             entity.move(self.grid, self.clock.get_time())
+
+        pygame.display.set_caption(f"Score: {self.pacman.score}")
 
         # fill the screen with a color to wipe away anything from last frame
         self.screen.fill("purple")

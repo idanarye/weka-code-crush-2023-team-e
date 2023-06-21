@@ -24,15 +24,25 @@ class Grid:
         self.width = width
         self.height = height
         # it's all dots for now. We'll change it later
-        self.cells = [[CellContent.Dot for _ in range(width)] for _ in range(height)]
+        self.cells = [[CellContent.Dot for _ in range(height)] for _ in range(width)]
         self.cells[2][2] = CellContent.Powerup
         self.cells[2][3] = CellContent.Wall
         self.cells[3][3] = CellContent.Wall
         self.cells[2][4] = CellContent.Empty
+        self.cells[2][5] = CellContent.Empty
+        self.cells[2][6] = CellContent.Empty
 
     def draw(self, screen):
-        for row, row_cells in enumerate(self.cells):
-            y = CELL_SIZE // 2 + row * CELL_SIZE
-            for col, cell in enumerate(row_cells):
-                x = CELL_SIZE // 2 + col * CELL_SIZE
+        for col, col_cells in enumerate(self.cells):
+            x = CELL_SIZE // 2 + col * CELL_SIZE
+            for row, cell in enumerate(col_cells):
+                y = CELL_SIZE // 2 + row * CELL_SIZE
                 cell.draw(screen, x, y)
+
+    
+    def get_cell(self, c, r):
+        return self.cells[c][r]
+
+    def set_cell(self, c, r,new_content):
+        self.cells[c][r] = new_content
+
