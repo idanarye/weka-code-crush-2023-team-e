@@ -2,6 +2,7 @@ from abc import ABCMeta, abstractmethod
 
 import pygame
 
+from grid import CellContent
 from globals import CELL_SIZE, NUM_COLS, NUM_ROWS
 
 class Entity(metaclass=ABCMeta):
@@ -13,36 +14,39 @@ class Entity(metaclass=ABCMeta):
         self.next = (c, r)
         self.speed = speed * 0.001
         self.direction = (0, 0)
+        self.ongoing_direction = (0, 0)  # this should not be changed mid-step
         self.movement_progress = 0.0
 
     def move(self, grid, frame_duration):
         self.movement_progress += frame_duration * self.speed
         if 1.0 <= self.movement_progress:
             self.movement_progress = 0.0
+            self.ongoing_direction = self.direction
 
-            def calc_with_wrap(coord, size):
-                if coord < 0:
+            self.current = self.next
+
+            def calc_with_wrap(coord, direction, size):
+                next_coord = coord + direction
+                if next_coord < 0:
                     return size - 1
-                elif size <= coord:
+                elif size <= next_coord:
                     return 0
                 else:
-                    return coord
+                    return next_coord
 
-            self.current = (
-                calc_with_wrap(self.next[0], NUM_COLS),
-                calc_with_wrap(self.next[1], NUM_ROWS),
-            )
+            self.next = tuple(calc_with_wrap(*args) for args in zip(self.current, self.ongoing_direction, [NUM_COLS, NUM_ROWS]))
+            if grid.get_cell(*self.next) == CellContent.Wall:
+                self.ongoing_direction = (0, 0)
+                self.next = self.current
 
-            self.next = tuple(c + d for c, d in zip(self.current, self.direction))
             self.on_movement(grid)
 
 
     def get_current_xy(self):
-        def calc(cur, nex):
-            return int(CELL_SIZE / 2 + (cur + (nex - cur) * self.movement_progress) * CELL_SIZE)
-        x = calc(self.current[0], self.next[0])
-        y = calc(self.current[1], self.next[1])
-        return (x, y)
+        return tuple(
+            int(CELL_SIZE / 2 + (coord + direction * self.movement_progress) * CELL_SIZE)
+            for coord, direction in zip(self.current, self.ongoing_direction)
+        )
 
     @abstractmethod
     def draw(self, screen):
