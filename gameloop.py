@@ -10,6 +10,7 @@ class GameLoop:
         self.screen = screen
         self.clock = pygame.time.Clock()
         self.running = True
+        self.game_over = False
 
         self.grid = Grid(NUM_COLS, NUM_ROWS)
         self.pacman = Pacman(1, 1, 1)
@@ -43,10 +44,13 @@ class GameLoop:
         if keys[pygame.K_ESCAPE]:
             self.running = False
 
-        for entity in self.iter_entities():
-            entity.move(self.grid, self.clock.get_time())
+        if self.game_over:
+            pygame.display.set_caption(f"Game Over. Score: {self.pacman.score}")
+        else:
+            for entity in self.iter_entities():
+                entity.move(self.grid, self.clock.get_time())
 
-        pygame.display.set_caption(f"Score: {self.pacman.score}")
+            pygame.display.set_caption(f"Score: {self.pacman.score}")
 
         # fill the screen with a color to wipe away anything from last frame
         self.screen.fill("purple")
@@ -58,7 +62,7 @@ class GameLoop:
         pygame.display.flip()
 
         if self.is_game_over():
-            self.running = False
+            self.game_over = True
 
         self.clock.tick(60)  # limits FPS to 60
 
