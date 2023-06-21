@@ -2,7 +2,7 @@ from abc import ABCMeta, abstractmethod
 
 import pygame
 
-from globals import CELL_SIZE
+from globals import CELL_SIZE, NUM_COLS, NUM_ROWS
 
 class Entity(metaclass=ABCMeta):
     """
@@ -19,7 +19,19 @@ class Entity(metaclass=ABCMeta):
         self.movement_progress += frame_duration * self.speed
         if 1.0 <= self.movement_progress:
             self.movement_progress = 0.0
-            self.current = self.next
+
+            def calc_with_wrap(coord, size):
+                if coord < 0:
+                    return size - 1
+                elif size <= coord:
+                    return 0
+                else:
+                    return coord
+
+            self.current = (
+                calc_with_wrap(self.next[0], NUM_COLS),
+                calc_with_wrap(self.next[1], NUM_ROWS),
+            )
 
             self.next = tuple(c + d for c, d in zip(self.current, self.direction))
             self.on_movement(grid)
