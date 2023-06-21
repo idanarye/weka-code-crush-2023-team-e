@@ -2,6 +2,7 @@ import pygame
 
 from grid import Grid
 from pacman import Pacman
+from globals import NUM_COLS, NUM_ROWS
 
 class GameLoop:
     def __init__(self, screen):
@@ -9,7 +10,7 @@ class GameLoop:
         self.clock = pygame.time.Clock()
         self.running = True
 
-        self.grid = Grid(20, 10)
+        self.grid = Grid(NUM_COLS, NUM_ROWS)
         self.pacman = Pacman(1, 1, 1)
 
     def run_loop(self):
