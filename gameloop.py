@@ -2,6 +2,7 @@ import pygame
 
 from grid import Grid
 from pacman import Pacman
+from ghost import Ghost
 from globals import NUM_COLS, NUM_ROWS
 
 class GameLoop:
@@ -12,6 +13,9 @@ class GameLoop:
 
         self.grid = Grid(NUM_COLS, NUM_ROWS)
         self.pacman = Pacman(1, 1, 1)
+        self.ghosts = [
+            Ghost(5, 1, 1, 'green'),
+        ]
 
     def run_loop(self):
         while self.running:
@@ -48,14 +52,13 @@ class GameLoop:
         self.screen.fill("purple")
 
         self.grid.draw(self.screen)
-        self.draw_entities()
+        for entity in self.iter_entities():
+            entity.draw(self.screen)
         # flip() the display to put your work on screen
         pygame.display.flip()
 
         self.clock.tick(60)  # limits FPS to 60
 
-    def draw_entities(self):
-        self.pacman.draw(self.screen)
-
     def iter_entities(self):
         yield self.pacman
+        yield from self.ghosts
