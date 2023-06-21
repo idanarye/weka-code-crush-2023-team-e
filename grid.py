@@ -2,7 +2,7 @@ from enum import Enum
 
 import pygame
 
-from globals import CELL_SIZE
+from globals import *
 
 class CellContent(Enum):
     Empty = 0
@@ -25,12 +25,45 @@ class Grid:
         self.height = height
         # it's all dots for now. We'll change it later
         self.cells = [[CellContent.Dot for _ in range(height)] for _ in range(width)]
+
+        holes_up = (3,16)
+        holes_side = (3,6)
+        def draw_walls():
+            for cell in range(NUM_ROWS):
+                if cell not in (holes_side):
+                    self.cells[0][cell] = CellContent.Wall
+                    self.cells[NUM_COLS-1][cell] = CellContent.Wall
+
+            for cell in range(NUM_COLS):
+                if cell not in (holes_up):
+                    self.cells[cell][0] = CellContent.Wall
+                    self.cells[cell][NUM_ROWS-1] = CellContent.Wall
+
+
+            self.cells[2][3] = CellContent.Wall
+            self.cells[2][4] = CellContent.Wall
+            self.cells[2][5] = CellContent.Wall
+
+            self.cells[3][5] = CellContent.Wall
+
+            self.cells[4][3] = CellContent.Wall
+            self.cells[4][4] = CellContent.Wall
+            self.cells[4][5] = CellContent.Wall
+
+            self.cells[5][5] = CellContent.Wall
+
+            self.cells[6][3] = CellContent.Wall
+            self.cells[6][4] = CellContent.Wall
+            self.cells[6][5] = CellContent.Wall
+
+            # self.cells[7][2] = CellContent.Wall
+            # self.cells[8][2] = CellContent.Wall
+            # self.cells[9][2] = CellContent.Wall
+
+        draw_walls()
         self.cells[2][2] = CellContent.Powerup
-        self.cells[2][3] = CellContent.Wall
-        self.cells[3][3] = CellContent.Wall
-        self.cells[2][4] = CellContent.Empty
-        self.cells[2][5] = CellContent.Empty
-        self.cells[2][6] = CellContent.Empty
+        self.cells[7][2] = CellContent.Powerup
+        self.cells[6][6] = CellContent.Powerup
 
     def draw(self, screen):
         for col, col_cells in enumerate(self.cells):
