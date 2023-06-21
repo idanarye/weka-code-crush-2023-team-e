@@ -3,7 +3,7 @@ import pygame
 from grid import Grid
 from pacman import Pacman
 from ghost import Ghost
-from globals import NUM_COLS, NUM_ROWS
+from globals import NUM_COLS, NUM_ROWS, CELL_SIZE
 
 class GameLoop:
     def __init__(self, screen):
@@ -57,8 +57,21 @@ class GameLoop:
         # flip() the display to put your work on screen
         pygame.display.flip()
 
+        if self.is_game_over():
+            self.running = False
+
         self.clock.tick(60)  # limits FPS to 60
 
     def iter_entities(self):
         yield self.pacman
         yield from self.ghosts
+
+    def is_game_over(self):
+        pacman_xy = self.pacman.get_current_xy()
+        for ghost in self.ghosts:
+            if all(
+                    abs(pacman_coord - ghost_coord) <= CELL_SIZE // 2
+                    for pacman_coord, ghost_coord in zip(pacman_xy, ghost.get_current_xy())
+            ):
+                return True
+        return False
